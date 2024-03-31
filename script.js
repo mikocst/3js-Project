@@ -51,7 +51,7 @@ fontLoader.load(
 )
 
 
-const geom = new THREE.SphereGeometry(1,32)
+const geom = new THREE.SphereGeometry(1,24)
 const mesh = new THREE.MeshBasicMaterial({map:texture})
 const shape = new THREE.Mesh(geom,mesh)
 scene.add(shape)
@@ -67,8 +67,8 @@ const animate = () => {
     const elapsedTime = clock.getElapsedTime()
 
     //Object position 
-    //shape.position.x = Math.cos(elapsedTime * Math.PI)
-    //shape.position.y = Math.sin(elapsedTime * Math.PI)
+    shape.position.x = Math.cos(elapsedTime * Math.PI * 0.1) * 3
+    shape.position.y = Math.sin(elapsedTime * Math.PI * 0.1) * 5
 
     //object rotation
     shape.rotation.x += 0.01
