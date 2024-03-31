@@ -1,5 +1,8 @@
 import * as THREE from "three"
 import './styles.css'
+import typefaceFont from './static/fonts/Geist Black_Regular.json'
+import { FontLoader} from "three/examples/jsm/loaders/FontLoader"
+import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry"
 
 const scene = new THREE.Scene()
 
@@ -20,6 +23,32 @@ const textureNormal = textureLoader.load('/static/Granite08large_4K_Normal.png')
 texture.colorSpace = THREE.SRGBColorSpace
 texture.generateMipmaps = false
 texture.minFilterFilter = THREE.NearestFilter
+
+const fontLoader = new FontLoader()
+fontLoader.load(
+    './static/fonts/Geist Black_Regular.json', (font) =>
+    {   console.log(font)
+        //console.log('font loaded') the font is loaded
+        const textGeometry = new TextGeometry(
+            'M i k o s  3 J S  J o u r n e y',
+            {
+                font, //property the same as variable so we can write it like this
+                size: 0.5,
+                height: 0.2,
+                curveSegments: 6,
+                bevelEnabled: true,
+                bevelThickness: 0.03,
+                bevelSize: 0.02,
+                bevelOffset: 0,
+                bevelSegments: 2,
+            }
+        )
+        textGeometry.center()
+        const textMaterial = new THREE.MeshMatcapMaterial({map: textureNormal}) 
+        const text = new THREE.Mesh(textGeometry, textMaterial)
+        scene.add(text)
+    }
+)
 
 
 const geom = new THREE.SphereGeometry(1,32)
