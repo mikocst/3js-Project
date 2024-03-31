@@ -28,7 +28,7 @@ const shape = new THREE.Mesh(geom,mesh)
 scene.add(shape)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height)
-camera.position.z = 10
+camera.position.z = 5
 scene.add(camera)
 
 //establish time
@@ -38,11 +38,12 @@ const animate = () => {
     const elapsedTime = clock.getElapsedTime()
 
     //Object position 
-    shape.position.x = Math.cos(elapsedTime)
-    shape.position.y = Math.sin(elapsedTime)
+    //shape.position.x = Math.cos(elapsedTime * Math.PI)
+    //shape.position.y = Math.sin(elapsedTime * Math.PI)
+
     //object rotation
     shape.rotation.x += 0.01
-    shape.rotation.y += 0.01 
+    shape.rotation.y += 0.001 
 
     window.requestAnimationFrame(animate)
 
