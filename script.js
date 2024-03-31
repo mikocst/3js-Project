@@ -18,15 +18,34 @@ const textureLoader = new THREE.TextureLoader()
 const texture = textureLoader.load('/static/Granite08large_4K_BaseColor.png')
 const textureNormal = textureLoader.load('/static/Granite08large_4K_Normal.png')
 texture.colorSpace = THREE.SRGBColorSpace
+texture.generateMipmaps = false
+texture.minFilterFilter = THREE.NearestFilter
 
 
-const geom = new THREE.SphereGeometry(1,32,16)
+const geom = new THREE.SphereGeometry(1,32)
 const mesh = new THREE.MeshBasicMaterial({map:texture})
-const sphere = new THREE.Mesh(geom,mesh)
-scene.add(sphere)
+const shape = new THREE.Mesh(geom,mesh)
+scene.add(shape)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height)
-camera.position.z = 5
+camera.position.z = 10
 scene.add(camera)
 
-renderer.render(scene, camera)
+//establish time
+const clock = new THREE.Clock()
+
+const animate = () => {
+    const elapsedTime = clock.getElapsedTime()
+
+    //Object position 
+    shape.position.x = Math.cos(elapsedTime)
+    shape.position.y = Math.sin(elapsedTime)
+    //object rotation
+    shape.rotation.x += 0.01
+    shape.rotation.y += 0.01 
+
+    window.requestAnimationFrame(animate)
+
+    renderer.render(scene, camera)
+}
+animate()
