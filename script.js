@@ -3,6 +3,9 @@ import './styles.css'
 import typefaceFont from './static/fonts/Geist Black_Regular.json'
 import { FontLoader} from "three/examples/jsm/loaders/FontLoader"
 import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry"
+import GUI from 'lil-gui'
+
+const debug = new GUI()
 
 const scene = new THREE.Scene()
 
@@ -11,9 +14,26 @@ const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
 }
+
+window.addEventListener('resize', () =>
+{
+    // Update sizes
+    sizes.width = window.innerWidth
+    sizes.height = window.innerHeight
+
+    // Update camera
+    camera.aspect = sizes.width / sizes.height
+    camera.updateProjectionMatrix()
+
+    // Update renderer
+    renderer.setSize(sizes.width, sizes.height)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+})
+
 const renderer = new THREE.WebGLRenderer({
     canvas:canvas,
-    alpha:true
+    alpha:true,
+    antialias: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 
@@ -33,11 +53,11 @@ fontLoader.load(
             'M i k o s  3 J S  J o u r n e y',
             {
                 font, //property the same as variable so we can write it like this
-                size: 0.5,
-                height: 0.2,
+                size: 0.25,
+                depth: 0.2,
                 curveSegments: 6,
                 bevelEnabled: true,
-                bevelThickness: 0.03,
+                bevelThickness: 0.02,
                 bevelSize: 0.02,
                 bevelOffset: 0,
                 bevelSegments: 2,
@@ -46,36 +66,63 @@ fontLoader.load(
         textGeometry.center()
         const textMaterial = new THREE.MeshMatcapMaterial({map: textureNormal}) 
         const text = new THREE.Mesh(textGeometry, textMaterial)
+        text.position.z = 6
         scene.add(text)
+        
+        const spheres = []
+
+        const mesh = new THREE.MeshBasicMaterial({map:texture})
+        const geom = new THREE.SphereGeometry(1,24)
+
+        for (let i = 0; i < 1000; i++) {
+            const sphere = new THREE.Mesh(geom,mesh)
+
+            sphere.position.x = (Math.random() - 0.5) * 10
+            sphere.position.y = (Math.random() - 0.5) * 10
+            sphere.position.z = (Math.random() - 0.5) * 10
+
+            sphere.rotation.x = (Math.random() * Math.PI)
+            sphere.rotation.y = (Math.random() * Math.PI)
+
+            const scale = Math.random()
+            sphere.scale.set(scale,scale,scale)
+            spheres.push(sphere)
+
+            scene.add(sphere)
+}
+anime(spheres)
     }
 )
 
 
-const geom = new THREE.SphereGeometry(1,24)
-const mesh = new THREE.MeshBasicMaterial({map:texture})
-const shape = new THREE.Mesh(geom,mesh)
-scene.add(shape)
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height)
-camera.position.z = 5
+camera.position.z = 8
 scene.add(camera)
 
-//establish time
+//debug
+debug.add(camera.position, 'y')
+debug.add(camera.position, 'z')
+
 const clock = new THREE.Clock()
 
-const animate = () => {
-    const elapsedTime = clock.getElapsedTime()
-
-    //Object position 
-    shape.position.x = Math.cos(elapsedTime * Math.PI * 0.1) * 3
-    shape.position.y = Math.sin(elapsedTime * Math.PI * 0.1) * 5
-
-    //object rotation
-    shape.rotation.x += 0.01
-    shape.rotation.y += 0.001 
-
-    window.requestAnimationFrame(animate)
-
-    renderer.render(scene, camera)
+function anime(spheres) {
+    const tick = () =>
+    {
+        const elapsedTime = clock.getElapsedTime()
+    
+        spheres.forEach((sphere) => {
+            sphere.rotation.x += 0.01 * Math.random()
+            sphere.rotation.y += 0.01 * Math.random()
+        })
+    
+        // Render
+        renderer.render(scene, camera)
+    
+        // Call tick again on the next frame
+        window.requestAnimationFrame(tick)
+    }
+    
+    tick()
 }
-animate()
+
