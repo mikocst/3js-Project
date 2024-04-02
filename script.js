@@ -3,6 +3,9 @@ import './styles.css'
 import typefaceFont from './static/fonts/Geist Black_Regular.json'
 import { FontLoader} from "three/examples/jsm/loaders/FontLoader"
 import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry"
+import GUI from 'lil-gui'
+
+const debug = new GUI()
 
 const scene = new THREE.Scene()
 
@@ -96,6 +99,10 @@ anime(spheres)
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height)
 camera.position.z = 8
 scene.add(camera)
+
+//debug
+debug.add(camera.position, 'y')
+debug.add(camera.position, 'z')
 
 const clock = new THREE.Clock()
 
