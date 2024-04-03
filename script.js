@@ -9,12 +9,22 @@ const debug = new GUI()
 
 const scene = new THREE.Scene()
 
+//setting canvas to window width and height
 const canvas = document.querySelector('canvas.webgl')
 const sizes = {
     width: window.innerWidth,
     height: window.innerHeight,
 }
 
+//lighting
+const light = new THREE.DirectionalLight(0xfffff,1)
+light.position.set(0,3,5)
+scene.add(light)
+
+//const helper = new THREE.DirectionalLightHelper(light,2)
+//scene.add(helper)
+
+//responsiveness for 3D Scene
 window.addEventListener('resize', () =>
 {
     // Update sizes
@@ -32,53 +42,64 @@ window.addEventListener('resize', () =>
 
 const renderer = new THREE.WebGLRenderer({
     canvas:canvas,
-    alpha:true,
     antialias: true,
 })
 renderer.setSize(sizes.width, sizes.height)
 
+
+//Initializing textures
 const textureLoader = new THREE.TextureLoader()
-const texture = textureLoader.load('/static/Granite08large_4K_BaseColor.png')
-const textureNormal = textureLoader.load('/static/Granite08large_4K_Normal.png')
+const texture = textureLoader.load('/static/dullblue.jpeg')
+const textureshine = textureLoader.load('/static/blueg.jpeg')
+
+//texture refinement
 texture.colorSpace = THREE.SRGBColorSpace
 texture.generateMipmaps = false
 texture.minFilterFilter = THREE.NearestFilter
 
+//texture shine refinement
+textureshine.colorSpace = THREE.SRGBColorSpace
+texture.generateMipmaps = true
+
+
+//Initialization of font
 const fontLoader = new FontLoader()
 fontLoader.load(
     './static/fonts/Geist Black_Regular.json', (font) =>
     {   console.log(font)
         //console.log('font loaded') the font is loaded
+        //creating text geometry
         const textGeometry = new TextGeometry(
-            'M i k o s  3 J S  J o u r n e y',
+            'M i k o  n  3 J S',
             {
                 font, //property the same as variable so we can write it like this
                 size: 0.25,
-                depth: 0.2,
-                curveSegments: 6,
+                depth: 0.4,
+                curveSegments: 3,
                 bevelEnabled: true,
                 bevelThickness: 0.02,
                 bevelSize: 0.02,
                 bevelOffset: 0,
-                bevelSegments: 2,
+                bevelSegments: 1,
             }
         )
         textGeometry.center()
-        const textMaterial = new THREE.MeshMatcapMaterial({map: textureNormal}) 
+        const textMaterial = new THREE.MeshMatcapMaterial({map: texture}) 
         const text = new THREE.Mesh(textGeometry, textMaterial)
         text.position.z = 6
         scene.add(text)
         
         const spheres = []
 
-        const mesh = new THREE.MeshBasicMaterial({map:texture})
-        const geom = new THREE.SphereGeometry(1,24)
+        const mesh = new THREE.MeshMatcapMaterial({map:textureshine})
+        const geom = new THREE.SphereGeometry(1,16)
 
+        //loading in spheres around the text
         for (let i = 0; i < 1000; i++) {
             const sphere = new THREE.Mesh(geom,mesh)
 
-            sphere.position.x = (Math.random() - 0.5) * 10
-            sphere.position.y = (Math.random() - 0.5) * 10
+            sphere.position.x = (Math.random() - 0.5) * 20
+            sphere.position.y = (Math.random() - 0.5) * 15
             sphere.position.z = (Math.random() - 0.5) * 10
 
             sphere.rotation.x = (Math.random() * Math.PI)
@@ -90,6 +111,7 @@ fontLoader.load(
 
             scene.add(sphere)
 }
+//callback animation function to animate each of the spheres
 anime(spheres)
     }
 )
@@ -97,7 +119,7 @@ anime(spheres)
 
 
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height)
-camera.position.z = 8
+camera.position.z = 9
 scene.add(camera)
 
 //debug
